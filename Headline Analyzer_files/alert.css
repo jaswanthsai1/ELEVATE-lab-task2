@@ -1,0 +1,106 @@
+.alert,
+div.wpforms-container-full .wpforms-form .alert  {
+  padding: 20px;
+  margin-bottom: 30px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+div.wpforms-container-full .wpforms-form .alert ul,
+div.wpforms-container-full .wpforms-form .alert ol  {
+  padding: 0 0 0 20px !important;
+}
+
+.alert p,
+div.wpforms-container-full .wpforms-form .alert p {
+ font-size: 16px;
+ line-height: 1.6
+}
+
+.alert-heading,
+div.wpforms-container-full .wpforms-form .alert-heading {
+  color: inherit;
+}
+
+.alert-link,
+div.wpforms-container-full .wpforms-form .alert-link {
+  font-weight: bold;
+}
+
+.alert-dismissible .close,
+div.wpforms-container-full .wpforms-form .alert-dismissible .close {
+  position: relative;
+  top: -0.75rem;
+  right: -1.25rem;
+  padding: 0.75rem 1.25rem;
+  color: inherit;
+}
+
+.alert-success,
+div.wpforms-container-full .wpforms-form .alert-success {
+  background-color: #dff0d8;
+  border-color: #d0e9c6;
+}
+
+.alert-success hr,
+div.wpforms-container-full .wpforms-form .alert-heading .alert-success hr {
+  border-top-color: #c1e2b3;
+}
+
+.alert-success .alert-link,
+div.wpforms-container-full .wpforms-form .alert-heading .alert-success .alert-link {
+  color: #2b542c;
+}
+
+.alert-info,
+div.wpforms-container-full .wpforms-form .alert-heading .alert-info {
+  background-color: #d9edf7;
+  border-color: #bcdff1;
+  color: #31708f;
+}
+
+.alert-info hr,
+div.wpforms-container-full .wpforms-form .alert-heading .alert-info hr {
+  border-top-color: #a6d5ec;
+}
+
+.alert-info .alert-link,
+div.wpforms-container-full .wpforms-form .alert-heading .alert-info .alert-link {
+  color: #245269;
+}
+
+.alert-warning,
+div.wpforms-container-full .wpforms-form .alert-heading .alert-warning {
+  background-color: #fcf8e3;
+  border-color: #faf2cc;
+  color: #8a6d3b;
+}
+
+.alert-warning hr,
+div.wpforms-container-full .wpforms-form .alert-heading .alert-warning hr {
+  border-top-color: #f7ecb5;
+}
+
+.alert-warning .alert-link,
+div.wpforms-container-full .wpforms-form .alert-heading .alert-warning .alert-link {
+  color: #66512c;
+}
+
+.alert-danger,
+div.wpforms-container-full .wpforms-form .alert-heading .alert-danger {
+  background-color: #f2dede;
+  border-color: #ebcccc;
+  color: #a94442;
+}
+
+.alert-danger hr,
+div.wpforms-container-full .wpforms-form .alert-heading .alert-danger hr {
+  border-top-color: #e4b9b9;
+}
+
+.alert-danger .alert-link,
+div.wpforms-container-full .wpforms-form .alert-heading .alert-danger .alert-link {
+  color: #843534;
+}

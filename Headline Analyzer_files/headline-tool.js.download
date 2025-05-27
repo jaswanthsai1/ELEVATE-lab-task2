@@ -1,0 +1,156 @@
+/* globals jQuery, headline_tool_vars, grecaptcha */
+jQuery(document).ready(function($){
+
+    /* IsItWP Headline */
+    var $search_input = $( '.input-in input' ),
+        $results = $( '.results' ),
+        $lists = $( '.history .lists' ),
+        $analyz = $( '.analyz' ),
+        $analyz_divider = $( '.divider-analyz' ),
+        $loader = $('.btn img'),
+        countHds = 0,
+        recap,
+        $g_recaptcha,
+        calling = false;
+
+    $( 'body' ).on( 'click', '.history .lists .lst', function(e) {
+      var $this = $(this);
+      var itemId = $this.data( 'hdid' );
+      var score = parseInt($this.data( 'score' ), 10);
+      var color = $this.data( 'color' );
+      var title = $this.find( '.hod' ).text();
+      $( '.result-child' ).hide();
+      $( '#rchld-' + itemId ).show();
+      $search_input.val(title);
+      var degree = score <= 50 ? (score / 50 * 180) : ( ( ( score - 50 ) / 50 * 180 ) + 180 );
+      updateAnalyzPie( color, degree, { score: score, sentence: title } );
+      $('html, body').animate({
+        scrollTop: $('.pre-analyze').offset().top
+      }, 500);
+    });
+
+    $('.input-in input').on('keyup', function (e) {
+      if (e.keyCode == 13) {
+        e.preventDefault();
+        fetchUpdates();
+        return false;
+      }
+    });
+
+    $( 'body' ).on( 'click', '.summary .row', function(e) {
+      $(this).toggleClass( 'open' );
+    });
+
+    $( 'body' ).on( 'click', '.history-hd .hdls li span.copy', function(e) {
+      e.stopPropagation();
+    });
+
+    $( 'body' ).on( 'mouseleave', '.history-hd .hdls li span.copy', function(e) {
+      $(this).next().removeClass( 'shown' );
+    });
+
+    $( 'body' ).on('click', '.input-in .btn.first', function(e){
+        e.preventDefault();
+        if (!$search_input.val()) {
+          return false;
+        }
+        fetchUpdates();
+    });
+
+    $( 'body' ).on('click', '.input-in .btn.second', function(e){
+        e.preventDefault();
+        if (!$search_input.val()) {
+          return false;
+        }
+        $('.input-head input').val( $('.refine input').val() );
+        $('html, body').animate({
+          scrollTop: $('.pre-analyze').offset().top
+        }, 100, fetchUpdates);
+    });
+
+  var onsolveCallbackHeadline = function( g_recaptcha_response ) {
+    recap = g_recaptcha_response;
+    $( '.input-in .btn' ).click();
+    return false;
+  };
+
+  var fetchUpdates = function() {
+        if ( calling ) {
+          return false;
+        }
+        if ( recap === undefined ) {
+          recap = '';
+        }
+        var post_data = {
+          _ajax_nonce: headline_tool_vars.search,
+          action: 'get_result_hdl',
+          dataType: 'json',
+          q: $search_input.val(),
+          recapt: recap
+        };
+
+        $results.find( '.result-child' ).hide();
+        $analyz.hide();
+        $analyz_divider.hide();
+        $g_recaptcha && $g_recaptcha.hide();
+        $loader.addClass('loading');
+        calling = true;
+
+        $.post(headline_tool_vars.ajaxurl, post_data, function(response) {
+          if (typeof response.success !== 'boolean' || !response.data.html) {
+            return false;
+          }
+
+          if ( response.data.method == 'noop' ) {
+            grecaptcha.reset();
+            $g_recaptcha && $g_recaptcha.show();
+            return false;
+          }
+
+          if ( typeof response.success === 'boolean' && response.success === false  && response.data.html ) {
+            return false;
+          }
+
+          $('.section.result').show();
+          countHds = $lists.find('.lst').length;
+          $results.prepend( response.data.html.replace('rchld-','rchld-' + ( countHds + 1 ) ) );
+          var colorClass = response.data.score <= 49 ? 'red' : ( response.data.score >= 70 ? 'green' : 'orange' );
+          var degree = response.data.score <= 50 ? (response.data.score / 50 * 180) : ( ( ( response.data.score - 50 ) / 50 * 180 ) + 180 );
+          $lists.prepend( '<div data-color="' + colorClass + '" data-score="' + response.data.score + '" data-hdid="' + ( countHds + 1 ) + '" class="lst"><div class="dot ' + colorClass + '">' + response.data.score + '</div><div class="hod">' + response.data.sentence + '</div></div>' );
+          updateAnalyzPie( colorClass, degree, response.data );
+          $results.find('#rchld-' + ( countHds + 1 ) + ' .refine input').val(response.data.sentence);
+
+          //ga('send', 'pageview', '/?q=' + $('#search-input').val());
+          $('html, body').animate({
+            scrollTop: $('.pre-analyze').offset().top
+          }, 500);
+          if ( $g_recaptcha && $g_recaptcha.is( ':visible' ) ) {
+            $g_recaptcha.hide();
+            grecaptcha.reset();
+          }
+        })
+        .always(function() {
+          $loader.removeClass('loading');
+          recap = '';
+          calling = false;
+        });
+        return false;
+  };
+
+  var updateAnalyzPie = function( colorClass, degree, data ) {
+    $analyz.find('.pie-wrapper .label').text( data.score );
+    $analyz.find('.pie-wrapper').attr( 'class', '' ).addClass( 'pie-wrapper ' + colorClass + ( data.score > 50 ? ' plus-50' : '' ) );
+    $analyz.find('.sum-ttl').text( "“" + data.sentence + "”" );
+    $analyz.find( '.pie-wrapper .pie .left-side' ).attr('style', 'transform: rotate(' + degree + 'deg);-webkit-transform: rotate(' + degree + 'deg);');
+    $analyz.show();
+    $analyz_divider.show();
+  };
+
+  window.onloadCallbackHeadline = function() {
+    grecaptcha.render( 'g_recaptcha', {
+        'sitekey' : headline_tool_vars.recaptcha_key,
+        'callback' : onsolveCallbackHeadline
+    } );
+    $g_recaptcha = $( '.g-recaptcha' );
+  };
+});
